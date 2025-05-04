@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+struct node {
+    unsigned dist[6], from[6];
+} DVR[10];
+
+int main() {
+    int costmat[6][6], nodes, i, j, k;
+
+    printf("\n\nEnter the number of nodes: ");
+    scanf("%d", &nodes); 
+
+    printf("\nEnter the cost matrix:\n");
+    for (i = 0; i < nodes; i++) {
+        for (j = 0; j < nodes; j++) {
+            scanf("%d", &costmat[i][j]);
+            costmat[i][i] = 0;
+            DVR[i].dist[j] = costmat[i][j];
+            DVR[i].from[j] = j;
+        }
+    }
+
+    for (i = 0; i < nodes; i++) {
+        for (j = i + 1; j < nodes; j++) {
+            for (k = 0; k < nodes; k++) {
+                if (DVR[i].dist[j] > costmat[i][k] + DVR[k].dist[j]) {
+                    DVR[i].dist[j] = costmat[i][k] + DVR[k].dist[j];
+                    DVR[j].dist[i] = DVR[i].dist[j];
+                    DVR[i].from[j] = k;
+                    DVR[j].from[i] = k;
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < nodes; i++) {
+        printf("\n\nFor router: %d", i + 1);
+        for (j = 0; j < nodes; j++) {
+            printf("\nNode %d via %d Distance %d", j + 1, DVR[i].from[j] + 1, DVR[i].dist[j]);
+        }
+    }
+
+    return 0;
+}
