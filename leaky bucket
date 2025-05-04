@@ -1,0 +1,31 @@
+#include <stdio.h>
+
+int main() {
+    int no_of_queries = 4;        // Number of times bucket is checked
+    int storage = 0;              // Initial packets in the bucket
+    int output_pkt_size = 1;      // Packets that leak out of the bucket per cycle
+    int input_pkt_size = 4;       // Packets that enter the bucket per cycle
+    int bucket_size = 10;         // Maximum capacity of the bucket
+    int size_left;                // Space left in the bucket
+
+    // Simulation of the Leaky Bucket algorithm
+    for (int i = 0; i < no_of_queries; i++) {
+        size_left = bucket_size - storage;  // Calculate available space
+
+        if (input_pkt_size <= size_left) {
+            // If there is enough space in the bucket, add the packets
+            storage += input_pkt_size;
+            printf("Buffer size = %d out of bucket size = %d\n", storage, bucket_size);
+        } else {
+            // If not enough space, packet loss occurs
+            printf("Packet loss = %d\n", (input_pkt_size - size_left));
+            storage = bucket_size;  // The bucket becomes full
+            printf("Buffer size = %d out of bucket size = %d\n", storage, bucket_size);
+        }
+
+        // Leaking process: Output packets are removed from the bucket
+        storage -= output_pkt_size;
+    }
+
+    return 0;
+}
