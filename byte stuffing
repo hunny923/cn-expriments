@@ -1,0 +1,33 @@
+#include <stdio.h>
+
+#define FLAG 0x7E
+#define ESC  0x7D
+
+void byteStuffing(unsigned char input[], int len) {
+    printf("Stuffed Data: ");
+    printf("0x%X ", FLAG);  // Start flag
+
+    for (int i = 0; i < len; i++) {
+        if (input[i] == FLAG || input[i] == ESC) {
+            printf("0x%X ", ESC);  // Insert ESC
+        }
+        printf("0x%X ", input[i]); // Insert data byte
+    }
+
+    printf("0x%X\n", FLAG);  // End flag
+}
+
+int main() {
+    unsigned char data[] = {0x45, 0x7D, 0x21, 0x7E, 0x33};  // Sample data with ESC and FLAG
+    int len = sizeof(data) / sizeof(data[0]);
+
+    printf("Original Data: ");
+    for (int i = 0; i < len; i++) {
+        printf("0x%X ", data[i]);
+    }
+    printf("\n");
+
+    byteStuffing(data, len);
+
+    return 0;
+}
