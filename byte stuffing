@@ -36,3 +36,53 @@ int main() {
 
     return 0;
 }
+--------------------------------------------------------------------------------------------------------------------------------
+optional code 
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_WORDS 100
+#define MAX_LEN 20
+
+int main() {
+    char data[1000];
+    char dlist[MAX_WORDS][MAX_LEN];
+    int count = 0;
+
+    printf("Enter data:\n");
+    fgets(data, sizeof(data), stdin);
+
+    // Remove trailing newline
+    size_t len = strlen(data);
+    if (len > 0 && data[len - 1] == '\n') {
+        data[len - 1] = '\0';
+    }
+
+    // Split input into words
+    char *token = strtok(data, " ");
+    while (token != NULL && count < MAX_WORDS) {
+        strcpy(dlist[count], token);
+        count++;
+        token = strtok(NULL, " ");
+    }
+
+    // Perform byte stuffing
+    char stuffed[MAX_WORDS * 2][MAX_LEN];  // double size in case all need stuffing
+    int stuffed_count = 0;
+
+    for (int i = 0; i < count; i++) {
+        if (strcmp(dlist[i], "flag") == 0 || strcmp(dlist[i], "esc") == 0) {
+            strcpy(stuffed[stuffed_count++], "esc");
+        }
+        strcpy(stuffed[stuffed_count++], dlist[i]);
+    }
+
+    // Print stuffed data
+    printf("Stuffed data:\n");
+    for (int i = 0; i < stuffed_count; i++) {
+        printf("%s ", stuffed[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
