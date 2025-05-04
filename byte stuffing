@@ -3,31 +3,36 @@
 #define FLAG 0x7E
 #define ESC  0x7D
 
-void byteStuffing(unsigned char input[], int len) {
-    printf("Stuffed Data: ");
-    printf("0x%X ", FLAG);  // Start flag
-
-    for (int i = 0; i < len; i++) {
-        if (input[i] == FLAG || input[i] == ESC) {
-            printf("0x%X ", ESC);  // Insert ESC
-        }
-        printf("0x%X ", input[i]); // Insert data byte
-    }
-
-    printf("0x%X\n", FLAG);  // End flag
-}
-
 int main() {
-    unsigned char data[] = {0x45, 0x7D, 0x21, 0x7E, 0x33};  // Sample data with ESC and FLAG
-    int len = sizeof(data) / sizeof(data[0]);
+    unsigned char data[] = {0x45, 0x7D, 0x21, 0x7E, 0x33};
+    int i, j = 0, k = 0;
+    unsigned char stuffed[100], unstuffed[100];
 
-    printf("Original Data: ");
-    for (int i = 0; i < len; i++) {
-        printf("0x%X ", data[i]);
+    // Stuffing
+    stuffed[j++] = FLAG;
+    for (i = 0; i < 5; i++) {
+        if (data[i] == FLAG || data[i] == ESC)
+            stuffed[j++] = ESC;
+        stuffed[j++] = data[i];
     }
-    printf("\n");
+    stuffed[j++] = FLAG;
 
-    byteStuffing(data, len);
+    // Unstuffing
+    for (i = 1; i < j - 1; i++) {
+        if (stuffed[i] == ESC)
+            i++; // Skip ESC
+        unstuffed[k++] = stuffed[i];
+    }
+
+    // Output
+    printf("Original  : ");
+    for (i = 0; i < 5; i++) printf("0x%X ", data[i]);
+
+    printf("\nStuffed   : ");
+    for (i = 0; i < j; i++) printf("0x%X ", stuffed[i]);
+
+    printf("\nUnstuffed : ");
+    for (i = 0; i < k; i++) printf("0x%X ", unstuffed[i]);
 
     return 0;
 }
