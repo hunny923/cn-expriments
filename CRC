@@ -1,0 +1,90 @@
+Transmitter side:-
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string msg, crc, encoded = "";
+
+    cout << "Enter the Data = ";
+    getline(cin, msg);
+
+    cout << "Enter the Generator Polynomial = ";
+    getline(cin, crc);
+
+    int m = msg.length(), n = crc.length();
+    encoded += msg;
+
+    // Append n-1 zeros
+    for (int i = 1; i <= n - 1; i++) {
+        encoded += "0";
+    }
+
+    // Perform division
+    for (int i = 0; i <= encoded.length() - n; ) {
+        for (int j = 0; j < n; j++) {
+            encoded[i + j] = encoded[i + j] == crc[j] ? '0' : '1';
+        }
+
+        // Move to the next non-zero bit
+        while (i < encoded.length() && encoded[i] != '1') {
+            i++;
+        }
+    }
+
+    cout << "###### Transmitter End ####" << endl;
+    cout << "The Input Data = " << msg << endl;
+    cout << "The Generator Polynomial = " << crc << endl;
+    cout << "The Remainder = " << encoded.substr(encoded.length() - n + 1) << endl;
+    cout << "The Data Transmitted with Remainder = " << msg + encoded.substr(encoded.length() - n + 1) << endl;
+
+    return 0;
+} Receiver side:-
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+bool isValidCRC(string received, string crc) {
+    int n = crc.length();
+
+    for (int i = 0; i <= received.length() - n; ) {
+        for (int j = 0; j < n; j++) {
+            received[i + j] = received[i + j] == crc[j] ? '0' : '1';
+        }
+
+        // Move to the next '1'
+        while (i < received.length() && received[i] != '1') {
+            i++;
+        }
+    }
+
+    // If the remainder is all zeros, no error
+    for (int i = received.length() - n + 1; i < received.length(); i++) {
+        if (received[i] != '0') return false;
+    }
+
+    return true;
+}
+
+int main() {
+    string received, crc;
+
+    cout << "Enter the Received Data = ";
+    getline(cin, received);
+
+    cout << "Enter the Generator Polynomial = ";
+    getline(cin, crc);
+
+    if (isValidCRC(received, crc)) {
+        cout << "###### Receiver End ######" << endl;
+        cout << "No Error Detected. Data is accepted." << endl;
+    } else {
+        cout << "###### Receiver End ######" << endl;
+        cout << "Error Detected in Received Data." << endl;
+    }
+
+    return 0;
+}
+  
